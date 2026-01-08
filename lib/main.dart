@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'services/supabase_service.dart';
+import 'services/permission_service.dart';
 import 'screens/auth_wrapper.dart';
 
 Future<void> main() async {
@@ -15,6 +16,10 @@ Future<void> main() async {
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
   );
+  
+  // Note: Permissions are requested when the user actually needs them
+  // This ensures they appear in iOS Settings after the first request
+  // Requesting permissions in main() before UI is ready can fail silently on iOS
   
   runApp(const MyApp());
 }

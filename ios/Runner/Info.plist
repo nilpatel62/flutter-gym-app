@@ -47,5 +47,19 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Form Coach needs access to your camera to analyze your exercise form and provide real-time coaching feedback.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Form Coach needs access to your microphone for audio feedback during exercise coaching sessions.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Form Coach needs access to your photo library to save exercise videos and form analysis results.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Form Coach needs permission to save exercise videos and analysis results to your photo library.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Form Coach uses local network access to communicate with ML Kit pose detection services for real-time form analysis.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Form Coach would like to send you notifications about your workout progress, form reminders, and exercise tips.</string>
+	<key>NSCameraReactionEffectGesturesEnabledDefault</key>
+	<true/>
+	<key>NSCameraPortraitEffectEnabled</key>
+	<true/>
 </dict>
 </plist>

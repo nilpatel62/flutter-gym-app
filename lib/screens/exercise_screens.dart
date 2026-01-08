@@ -311,10 +311,12 @@ class _SetupScreenState extends State<SetupScreen> {
         }
       }
       
-      // If denied, request permission
-      if (status.isDenied) {
+      // Request permission if not granted
+      // On iOS, we need to request even if status is unclear to ensure it appears in Settings
+      if (!status.isGranted) {
         final result = await Permission.camera.request();
         
+        // Check the result after request
         if (result.isPermanentlyDenied) {
           if (mounted) {
             setState(() => _isLoading = false);
@@ -332,7 +334,7 @@ class _SetupScreenState extends State<SetupScreen> {
         }
       }
 
-      // Check again after request to ensure we have permission
+      // Final check to ensure we have permission
       final finalStatus = await Permission.camera.status;
       if (!finalStatus.isGranted) {
         if (mounted) {
@@ -420,7 +422,9 @@ class _SetupScreenState extends State<SetupScreen> {
           children: [
             Icon(Icons.settings, color: Colors.red),
             SizedBox(width: 12),
-            Text('Camera Permission Required'),
+            Flexible(
+              child: Text('Camera Permission Required'),
+            ),
           ],
         ),
         content: const Text(
@@ -429,7 +433,7 @@ class _SetupScreenState extends State<SetupScreen> {
           '2. Find "Form Coach" in the list\n'
           '3. Toggle "Camera" to ON\n'
           '4. Return to the app and try again\n\n'
-          'If "Form Coach" doesn\'t appear in Settings, please uninstall and reinstall the app.',
+          'Note: If "Form Coach" doesn\'t appear in Settings, the permission may not have been requested yet. Try tapping "Grant Permission" first, then check Settings.',
         ),
         actions: [
           TextButton(
@@ -806,6 +810,8 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
   @override
   Widget build(BuildContext context) {
     final ctrl = _controller;
+    final isCameraReady = ctrl != null && ctrl.value.isInitialized;
+    
     return Scaffold(
       appBar: AppBar(
         title: Text("Live Coach: ${widget.exercise.name.toUpperCase()}"),
@@ -814,17 +820,20 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
       ),
       body: Column(
         children: [
-          if (ctrl == null)
+          if (!isCameraReady)
             Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.camera_alt_outlined,
-                      size: 64,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                    if (ctrl != null && !ctrl.value.isInitialized)
+                      const CircularProgressIndicator()
+                    else
+                      Icon(
+                        Icons.camera_alt_outlined,
+                        size: 64,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     const SizedBox(height: 16),
                     Text(
                       _status,
@@ -852,9 +861,10 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
           else
             Expanded(
               child: Stack(
-                fit: StackFit.expand,
                 children: [
-                  CameraPreview(ctrl),
+                  Positioned.fill(
+                    child: CameraPreview(ctrl!),
+                  ),
                   Positioned(
                     left: 12,
                     right: 12,
