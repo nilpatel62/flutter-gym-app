@@ -1,39 +1,59 @@
 import 'package:permission_handler/permission_handler.dart';
 
-/// Service to initialize and request permissions early in the app lifecycle
-/// This ensures permissions appear in iOS Settings even if not immediately used
+/// Centralized service for handling camera permissions throughout the app
 class PermissionService {
-  /// Initialize permissions - requests them silently in the background
-  /// This makes them appear in iOS Settings
-  /// Uses batch request for better performance and user experience
-  static Future<void> initializePermissions() async {
+  /// Request camera permission with proper flow handling
+  /// Returns the permission status after the request
+  ///
+  /// Flow:
+  /// 1. Check current permission status
+  /// 2. If permanently denied -> Return status (caller should open settings)
+  /// 3. If not granted -> Request permission
+  /// 4. Return final status
+  static Future<PermissionStatus> requestCameraPermission() async {
     try {
-      // Request multiple permissions simultaneously
-      final statuses = await [
-        Permission.camera,
-        Permission.microphone,
-        Permission.photos,
-        Permission.notification,
-      ].request();
+      // Step 1: Check current permission status
+      final currentStatus = await Permission.camera.status;
 
-      // Handle each status as needed
-      // Camera status: ${statuses[Permission.camera]}
-      // Microphone status: ${statuses[Permission.microphone]}
-      // Photos status: ${statuses[Permission.photos]}
-      // Notification status: ${statuses[Permission.notification]}
+      // Step 2: If permanently denied, can't request - return immediately
+      if (currentStatus.isPermanentlyDenied) {
+        return currentStatus;
+      }
 
-      // Note: Local Network permission is automatically handled by iOS
-      // when the app uses network services (like ML Kit)
+      // Step 3: If already granted, return immediately
+      if (currentStatus.isGranted) {
+        return currentStatus;
+      }
+
+      // Step 4: Request permission
+      final result = await Permission.camera.request();
+      return result;
     } catch (e) {
-      // Silently handle errors - permissions will be requested when needed
-      print('Permission initialization error: $e');
+      print('Camera permission request error: $e');
+      // Return denied status on error
+      return PermissionStatus.denied;
     }
   }
 
-  /// Check if all required permissions are granted
-  static Future<bool> checkRequiredPermissions() async {
-    final cameraStatus = await Permission.camera.status;
-    return cameraStatus.isGranted;
+  /// Check if camera permission is currently granted
+  static Future<bool> isCameraPermissionGranted() async {
+    final status = await Permission.camera.status;
+    return status.isGranted;
+  }
+
+  /// Check if camera permission is permanently denied
+  static Future<bool> isCameraPermissionPermanentlyDenied() async {
+    final status = await Permission.camera.status;
+    return status.isPermanentlyDenied;
+  }
+
+  /// Open app settings for manual permission grant
+  static Future<bool> openSettings() async {
+    try {
+      return await openAppSettings();
+    } catch (e) {
+      print('Error opening app settings: $e');
+      return false;
+    }
   }
 }
-

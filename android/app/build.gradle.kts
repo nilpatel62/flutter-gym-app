@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.form_coach"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

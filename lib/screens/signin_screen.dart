@@ -118,12 +118,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: Colors.red[700], size: 20),
+                        Icon(Icons.error_outline,
+                            color: Colors.red[700], size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _errorMessage!,
-                            style: TextStyle(color: Colors.red[700], fontSize: 14),
+                            style:
+                                TextStyle(color: Colors.red[700], fontSize: 14),
                           ),
                         ),
                       ],
@@ -164,7 +166,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                       ),
                       onPressed: () {
                         setState(() {
@@ -194,7 +198,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: () {
                       // TODO: Implement forgot password
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Forgot password feature coming soon')),
+                        const SnackBar(
+                            content:
+                                Text('Forgot password feature coming soon')),
                       );
                     },
                     child: const Text('Forgot Password?'),
@@ -219,7 +225,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         )
                       : const Text(
                           'Sign In',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),
                 const SizedBox(height: 24),
@@ -246,4 +253,3 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
-

@@ -9,6 +9,7 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vibration/vibration.dart';
 import '../services/supabase_service.dart';
+import '../services/permission_service.dart';
 
 enum ExerciseType { squat, pushup, deadlift }
 
@@ -54,17 +55,20 @@ class ExerciseSelectScreen extends StatelessWidget {
                 Text(
                   'Select Your Exercise',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Choose an exercise to start your form coaching session',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
@@ -95,10 +99,16 @@ class ExerciseSelectScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withOpacity(0.5),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.3),
                     ),
                   ),
                   child: Column(
@@ -114,21 +124,32 @@ class ExerciseSelectScreen extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             'Setup Tips',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      _TipItem(icon: Icons.height, text: 'Place phone at waist height'),
+                      _TipItem(
+                          icon: Icons.height,
+                          text: 'Place phone at waist height'),
                       const SizedBox(height: 8),
-                      _TipItem(icon: Icons.straighten, text: 'Position 2–3 meters away'),
+                      _TipItem(
+                          icon: Icons.straighten,
+                          text: 'Position 2–3 meters away'),
                       const SizedBox(height: 8),
-                      _TipItem(icon: Icons.person_outline, text: 'Ensure full body is visible'),
+                      _TipItem(
+                          icon: Icons.person_outline,
+                          text: 'Ensure full body is visible'),
                       const SizedBox(height: 8),
-                      _TipItem(icon: Icons.camera_alt_outlined, text: 'Side view only'),
+                      _TipItem(
+                          icon: Icons.camera_alt_outlined,
+                          text: 'Side view only'),
                     ],
                   ),
                 ),
@@ -204,16 +225,19 @@ class _ExerciseCard extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
                     ),
                   ],
                 ),
@@ -251,8 +275,9 @@ class _TipItem extends StatelessWidget {
           child: Text(
             text,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                ),
           ),
         ),
       ],
@@ -272,78 +297,60 @@ class _SetupScreenState extends State<SetupScreen> {
   bool _isLoading = false;
 
   String get title => switch (widget.exercise) {
-    ExerciseType.squat => "Squat Setup",
-    ExerciseType.pushup => "Push-up Setup",
-    ExerciseType.deadlift => "Deadlift Setup",
-  };
+        ExerciseType.squat => "Squat Setup",
+        ExerciseType.pushup => "Push-up Setup",
+        ExerciseType.deadlift => "Deadlift Setup",
+      };
 
   String get exerciseName => switch (widget.exercise) {
-    ExerciseType.squat => "Squat",
-    ExerciseType.pushup => "Push-up",
-    ExerciseType.deadlift => "Deadlift",
-  };
+        ExerciseType.squat => "Squat",
+        ExerciseType.pushup => "Push-up",
+        ExerciseType.deadlift => "Deadlift",
+      };
 
   IconData get exerciseIcon => switch (widget.exercise) {
-    ExerciseType.squat => Icons.fitness_center,
-    ExerciseType.pushup => Icons.sports_gymnastics,
-    ExerciseType.deadlift => Icons.trending_up,
-  };
+        ExerciseType.squat => Icons.fitness_center,
+        ExerciseType.pushup => Icons.sports_gymnastics,
+        ExerciseType.deadlift => Icons.trending_up,
+      };
 
   Color get exerciseColor => switch (widget.exercise) {
-    ExerciseType.squat => Colors.blue,
-    ExerciseType.pushup => Colors.orange,
-    ExerciseType.deadlift => Colors.purple,
-  };
+        ExerciseType.squat => Colors.blue,
+        ExerciseType.pushup => Colors.orange,
+        ExerciseType.deadlift => Colors.purple,
+      };
 
   Future<void> _checkPermissionAndStart() async {
     setState(() => _isLoading = true);
 
     try {
-      // Check current permission status
-      final status = await Permission.camera.status;
-      
-      // Handle permanently denied first (user must go to Settings)
+      // Use centralized permission service
+      final status = await PermissionService.requestCameraPermission();
+
+      // Handle permission status
       if (status.isPermanentlyDenied) {
+        // Permission is permanently denied - must go to settings
         if (mounted) {
           setState(() => _isLoading = false);
           _showPermissionPermanentlyDeniedDialog();
           return;
         }
       }
-      
-      // Request permission if not granted
-      // On iOS, we need to request even if status is unclear to ensure it appears in Settings
-      if (!status.isGranted) {
-        final result = await Permission.camera.request();
-        
-        // Check the result after request
-        if (result.isPermanentlyDenied) {
-          if (mounted) {
-            setState(() => _isLoading = false);
-            _showPermissionPermanentlyDeniedDialog();
-            return;
-          }
-        }
-        
-        if (result.isDenied) {
-          if (mounted) {
-            setState(() => _isLoading = false);
-            _showPermissionDeniedDialog();
-            return;
-          }
+
+      if (status.isDenied) {
+        // Permission was denied - show retry dialog
+        if (mounted) {
+          setState(() => _isLoading = false);
+          _showPermissionDeniedDialog();
+          return;
         }
       }
 
-      // Final check to ensure we have permission
-      final finalStatus = await Permission.camera.status;
-      if (!finalStatus.isGranted) {
+      if (!status.isGranted) {
+        // Any other non-granted status
         if (mounted) {
           setState(() => _isLoading = false);
-          if (finalStatus.isPermanentlyDenied) {
-            _showPermissionPermanentlyDeniedDialog();
-          } else {
-            _showPermissionDeniedDialog();
-          }
+          _showPermissionDeniedDialog();
           return;
         }
       }
@@ -355,12 +362,13 @@ class _SetupScreenState extends State<SetupScreen> {
           (c) => c.lensDirection == CameraLensDirection.back,
           orElse: () => cameras.first,
         );
-        
+
         if (mounted) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => LiveCoachScreen(exercise: widget.exercise, camera: cam),
+              builder: (_) =>
+                  LiveCoachScreen(exercise: widget.exercise, camera: cam),
             ),
           );
         }
@@ -428,12 +436,11 @@ class _SetupScreenState extends State<SetupScreen> {
           ],
         ),
         content: const Text(
-          'Camera permission has been denied. To enable it:\n\n'
+          'Camera permission has been permanently denied. To enable it:\n\n'
           '1. Tap "Open Settings" below\n'
-          '2. Find "Form Coach" in the list\n'
+          '2. Find your app in the list\n'
           '3. Toggle "Camera" to ON\n'
-          '4. Return to the app and try again\n\n'
-          'Note: If "Form Coach" doesn\'t appear in Settings, the permission may not have been requested yet. Try tapping "Grant Permission" first, then check Settings.',
+          '4. Return to the app and try again',
         ),
         actions: [
           TextButton(
@@ -443,7 +450,7 @@ class _SetupScreenState extends State<SetupScreen> {
           FilledButton(
             onPressed: () async {
               Navigator.pop(context);
-              await openAppSettings();
+              await PermissionService.openSettings();
             },
             child: const Text('Open Settings'),
           ),
@@ -494,15 +501,16 @@ class _SetupScreenState extends State<SetupScreen> {
                 Text(
                   'Setup Instructions',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
                 _SetupInstructionCard(
                   icon: Icons.camera_alt,
                   title: 'Camera Position',
-                  description: 'Place your phone at waist height, 2–3 meters away',
+                  description:
+                      'Place your phone at waist height, 2–3 meters away',
                   color: exerciseColor,
                 ),
                 const SizedBox(height: 16),
@@ -516,14 +524,16 @@ class _SetupScreenState extends State<SetupScreen> {
                 _SetupInstructionCard(
                   icon: Icons.light_mode,
                   title: 'Lighting',
-                  description: 'Make sure you have good lighting for better detection',
+                  description:
+                      'Make sure you have good lighting for better detection',
                   color: exerciseColor,
                 ),
                 const SizedBox(height: 16),
                 _SetupInstructionCard(
                   icon: Icons.swap_horiz,
                   title: 'Side View Only',
-                  description: 'Position yourself so the camera captures your side profile',
+                  description:
+                      'Position yourself so the camera captures your side profile',
                   color: exerciseColor,
                 ),
                 const SizedBox(height: 40),
@@ -537,11 +547,13 @@ class _SetupScreenState extends State<SetupScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Icon(Icons.play_arrow),
-                    label: Text(_isLoading ? 'Starting...' : 'Start Live Coach'),
+                    label:
+                        Text(_isLoading ? 'Starting...' : 'Start Live Coach'),
                     style: FilledButton.styleFrom(
                       backgroundColor: exerciseColor,
                       shape: RoundedRectangleBorder(
@@ -600,15 +612,18 @@ class _SetupInstructionCard extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                    ),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                        ),
                   ),
                 ],
               ),
@@ -623,7 +638,8 @@ class _SetupInstructionCard extends StatelessWidget {
 class LiveCoachScreen extends StatefulWidget {
   final ExerciseType exercise;
   final CameraDescription camera;
-  const LiveCoachScreen({super.key, required this.exercise, required this.camera});
+  const LiveCoachScreen(
+      {super.key, required this.exercise, required this.camera});
 
   @override
   State<LiveCoachScreen> createState() => _LiveCoachScreenState();
@@ -665,22 +681,21 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
   }
 
   Future<void> _init() async {
-    // Check permission status first
-    final camPermStatus = await Permission.camera.status;
-    
-    if (camPermStatus.isDenied) {
-      final camPerm = await Permission.camera.request();
-      if (!camPerm.isGranted) {
-        if (mounted) {
-          setState(() => _status = "Camera permission denied");
-          _showPermissionError();
-        }
-        return;
-      }
-    } else if (camPermStatus.isPermanentlyDenied) {
+    // Use centralized permission service for final check
+    final status = await PermissionService.requestCameraPermission();
+
+    if (status.isPermanentlyDenied) {
       if (mounted) {
         setState(() => _status = "Camera permission permanently denied");
-        _showPermissionError();
+        _showPermissionError(isPermanentlyDenied: true);
+      }
+      return;
+    }
+
+    if (!status.isGranted) {
+      if (mounted) {
+        setState(() => _status = "Camera permission denied");
+        _showPermissionError(isPermanentlyDenied: false);
       }
       return;
     }
@@ -709,34 +724,52 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
     }
   }
 
-  void _showPermissionError() {
+  void _showPermissionError({required bool isPermanentlyDenied}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.camera_alt, color: Colors.orange),
-                SizedBox(width: 12),
-                Text('Camera Permission Required'),
+                Icon(
+                  isPermanentlyDenied ? Icons.settings : Icons.camera_alt,
+                  color: isPermanentlyDenied ? Colors.red : Colors.orange,
+                ),
+                const SizedBox(width: 12),
+                const Flexible(
+                  child: Text('Camera Permission Required'),
+                ),
               ],
             ),
-            content: const Text(
-              'Camera access is required to use the form coach. '
-              'Please grant camera permission in settings.',
+            content: Text(
+              isPermanentlyDenied
+                  ? 'Camera permission has been permanently denied. To enable it:\n\n'
+                      '1. Tap "Open Settings" below\n'
+                      '2. Find your app in the list\n'
+                      '3. Toggle "Camera" to ON\n'
+                      '4. Return to the app and try again'
+                  : 'Camera access is required to use the form coach. '
+                      'Please grant camera permission to continue.',
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  openAppSettings();
+                  Navigator.pop(context); // Go back to setup screen
                 },
-                child: const Text('Open Settings'),
+                child: const Text('Go Back'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  if (isPermanentlyDenied) {
+                    await PermissionService.openSettings();
+                  } else {
+                    Navigator.pop(context); // Go back to retry
+                  }
+                },
+                child: Text(isPermanentlyDenied ? 'Open Settings' : 'Retry'),
               ),
             ],
           ),
@@ -811,7 +844,7 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
   Widget build(BuildContext context) {
     final ctrl = _controller;
     final isCameraReady = ctrl != null && ctrl.value.isInitialized;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Live Coach: ${widget.exercise.name.toUpperCase()}"),
@@ -838,8 +871,8 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
                     Text(
                       _status,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
@@ -848,9 +881,13 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Text(
                           'Please grant camera permission to continue',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -869,7 +906,8 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
                     left: 12,
                     right: 12,
                     bottom: 16,
-                    child: _HUD(reps: _reps, score: _score, tip: _tip, status: _status),
+                    child: _HUD(
+                        reps: _reps, score: _score, tip: _tip, status: _status),
                   ),
                 ],
               ),
@@ -889,7 +927,11 @@ class _HUD extends StatelessWidget {
   final String tip;
   final String status;
 
-  const _HUD({required this.reps, required this.score, required this.tip, required this.status});
+  const _HUD(
+      {required this.reps,
+      required this.score,
+      required this.tip,
+      required this.status});
 
   Color _getScoreColor(int score) {
     if (score >= 80) return Colors.green;
@@ -1079,22 +1121,41 @@ class FormEngine {
     final lm = pose.landmarks;
 
     // Required landmarks (we use LEFT by default; if missing, fallback to RIGHT)
-    PoseLandmark? sh = lm[PoseLandmarkType.leftShoulder] ?? lm[PoseLandmarkType.rightShoulder];
-    PoseLandmark? hp = lm[PoseLandmarkType.leftHip] ?? lm[PoseLandmarkType.rightHip];
-    PoseLandmark? kn = lm[PoseLandmarkType.leftKnee] ?? lm[PoseLandmarkType.rightKnee];
-    PoseLandmark? an = lm[PoseLandmarkType.leftAnkle] ?? lm[PoseLandmarkType.rightAnkle];
-    PoseLandmark? heel = lm[PoseLandmarkType.leftHeel] ?? lm[PoseLandmarkType.rightHeel];
-    PoseLandmark? toe = lm[PoseLandmarkType.leftFootIndex] ?? lm[PoseLandmarkType.rightFootIndex];
+    PoseLandmark? sh =
+        lm[PoseLandmarkType.leftShoulder] ?? lm[PoseLandmarkType.rightShoulder];
+    PoseLandmark? hp =
+        lm[PoseLandmarkType.leftHip] ?? lm[PoseLandmarkType.rightHip];
+    PoseLandmark? kn =
+        lm[PoseLandmarkType.leftKnee] ?? lm[PoseLandmarkType.rightKnee];
+    PoseLandmark? an =
+        lm[PoseLandmarkType.leftAnkle] ?? lm[PoseLandmarkType.rightAnkle];
+    PoseLandmark? heel =
+        lm[PoseLandmarkType.leftHeel] ?? lm[PoseLandmarkType.rightHeel];
+    PoseLandmark? toe = lm[PoseLandmarkType.leftFootIndex] ??
+        lm[PoseLandmarkType.rightFootIndex];
 
-    if (sh == null || hp == null || kn == null || an == null || heel == null || toe == null) {
-      return FormResult(reps: _reps, score: 0, tip: "Move into frame (full body).", alertSeverity: 0);
+    if (sh == null ||
+        hp == null ||
+        kn == null ||
+        an == null ||
+        heel == null ||
+        toe == null) {
+      return FormResult(
+          reps: _reps,
+          score: 0,
+          tip: "Move into frame (full body).",
+          alertSeverity: 0);
     }
 
     // Confidence gate (ML Kit has landmark "likelihood" via inFrameLikelihood)
     // Some versions provide it; if null, assume ok.
     final minLik = _minLikely([sh, hp, kn, an, heel, toe]);
     if (minLik != null && minLik < 0.55) {
-      return FormResult(reps: _reps, score: 0, tip: "Low detection. Improve lighting / step back.", alertSeverity: 0);
+      return FormResult(
+          reps: _reps,
+          score: 0,
+          tip: "Low detection. Improve lighting / step back.",
+          alertSeverity: 0);
     }
 
     // Scale normalization for thresholds
@@ -1191,7 +1252,11 @@ class FormEngine {
     // Friendly default tip
     _tip = _tip.isEmpty ? "Good form" : _tip;
 
-    return FormResult(reps: _reps, score: _score.clamp(0, 100), tip: _tip, alertSeverity: _alertSeverity);
+    return FormResult(
+        reps: _reps,
+        score: _score.clamp(0, 100),
+        tip: _tip,
+        alertSeverity: _alertSeverity);
   }
 
   void _squatChecks({
@@ -1299,8 +1364,8 @@ class FormEngine {
     _ema.set('hipPrev', hipY);
     _ema.set('shPrev', shoulderY);
 
-    final dHip = (hipPrev - hipY).abs();      // movement magnitude
-    final dSh = (shPrev - shoulderY).abs();   // movement magnitude
+    final dHip = (hipPrev - hipY).abs(); // movement magnitude
+    final dSh = (shPrev - shoulderY).abs(); // movement magnitude
     final ratio = dHip / (dSh + 1e-6);
 
     // Only judge during ascent (lift phase)
@@ -1358,7 +1423,7 @@ class FormEngine {
 
     final cos = (dot / (mag1 * mag2)).clamp(-1.0, 1.0);
     return math.acos(cos) * 180.0 / math.pi;
-    }
+  }
 
   double _torsoLeanDeg(PoseLandmark shoulder, PoseLandmark hip) {
     // angle between torso vector (shoulder->hip) and vertical axis
@@ -1385,13 +1450,18 @@ class FormResult {
   final int score;
   final String tip;
   final int alertSeverity;
-  FormResult({required this.reps, required this.score, required this.tip, required this.alertSeverity});
+  FormResult(
+      {required this.reps,
+      required this.score,
+      required this.tip,
+      required this.alertSeverity});
 }
 
 /// -----------------------
 /// Rep State Machine
 /// -----------------------
 enum RepState { top, descent, bottom, ascent }
+
 enum RepEvent { none, repCompleted }
 
 class RepStateMachine {
@@ -1423,7 +1493,8 @@ class RepStateMachine {
 
     // simple EMA for signal
     _prevSignalEma = _signalEma;
-    _signalEma = (_signalEma == 0) ? signal : (_signalEma * 0.75 + signal * 0.25);
+    _signalEma =
+        (_signalEma == 0) ? signal : (_signalEma * 0.75 + signal * 0.25);
 
     // y-down camera: moving "down" means signal increases
     final v = _signalEma - _prevSignalEma;
@@ -1496,7 +1567,8 @@ class RepStateMachine {
     return RepEvent.none;
   }
 
-  int currentRepMs(int nowMs) => (state == RepState.top) ? 0 : (nowMs - _repStartMs);
+  int currentRepMs(int nowMs) =>
+      (state == RepState.top) ? 0 : (nowMs - _repStartMs);
 }
 
 /// -----------------------
@@ -1521,7 +1593,8 @@ class _EMA {
 /// -----------------------
 /// CameraImage -> InputImage
 /// -----------------------
-InputImage _cameraImageToInputImage(CameraImage image, CameraController controller) {
+InputImage _cameraImageToInputImage(
+    CameraImage image, CameraController controller) {
   final bytes = _concatenatePlanes(image.planes);
 
   final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
@@ -1531,12 +1604,14 @@ InputImage _cameraImageToInputImage(CameraImage image, CameraController controll
       ) ??
       InputImageRotation.rotation0deg;
 
-  final inputImageFormat = InputImageFormatValue.fromRawValue(image.format.raw) ??
-      InputImageFormat.nv21;
+  final inputImageFormat =
+      InputImageFormatValue.fromRawValue(image.format.raw) ??
+          InputImageFormat.nv21;
 
   // For multiple planes, use the first plane's bytesPerRow
   // For single plane formats, use the plane's bytesPerRow directly
-  final bytesPerRow = image.planes.isNotEmpty ? image.planes.first.bytesPerRow : image.width;
+  final bytesPerRow =
+      image.planes.isNotEmpty ? image.planes.first.bytesPerRow : image.width;
 
   final metadata = InputImageMetadata(
     size: imageSize,
@@ -1555,4 +1630,3 @@ Uint8List _concatenatePlanes(List<Plane> planes) {
   }
   return Uint8List.fromList(allBytes);
 }
-

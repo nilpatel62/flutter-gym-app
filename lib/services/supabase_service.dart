@@ -15,7 +15,8 @@ class SupabaseService {
 
   static User? get currentUser => client.auth.currentUser;
 
-  static Stream<AuthState> get authStateChanges => client.auth.onAuthStateChange;
+  static Stream<AuthState> get authStateChanges =>
+      client.auth.onAuthStateChange;
 
   static Future<AuthResponse> signUp({
     required String email,
@@ -43,4 +44,3 @@ class SupabaseService {
     await client.auth.signOut();
   }
 }
-
