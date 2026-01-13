@@ -43,4 +43,34 @@ class SupabaseService {
   static Future<void> signOut() async {
     await client.auth.signOut();
   }
+
+  /// Save a completed rep to the database
+  /// Returns the inserted record ID, or null if insertion failed
+  static Future<String?> saveRepCompletion({
+    required String userId,
+    required String exerciseName,
+    required int repNumber,
+    required int score,
+    DateTime? date,
+  }) async {
+    try {
+      final response = await client.from('workout_sessions').insert({
+        'user_id': userId,
+        'exercise_name': exerciseName,
+        'rep_number': repNumber,
+        'score': score,
+        'date': (date ?? DateTime.now()).toIso8601String(),
+        'created_at': DateTime.now().toIso8601String(),
+      }).select('id');
+
+      if (response.isNotEmpty && response.first is Map) {
+        return response.first['id'] as String?;
+      }
+      return null;
+    } catch (e) {
+      // Log error but don't throw - we don't want to break the workout flow
+      print('Error saving rep completion: $e');
+      return null;
+    }
+  }
 }

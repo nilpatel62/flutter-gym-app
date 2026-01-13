@@ -659,6 +659,7 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
   int _score = 0;
   String _tip = "Stand in frame (side view)";
   int _lastAlertMs = 0;
+  int _previousReps = 0; // Track previous rep count to detect new reps
 
   // basic throttle: process every Nth frame
   int _frameIndex = 0;
@@ -802,6 +803,17 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
 
       final result = _engine.update(pose, nowMs);
 
+      // Check if a new rep was completed
+      if (result.reps > _previousReps) {
+        // New rep completed - save to database with the accumulated score
+        final repScore = result.completedRepScore ?? result.score;
+        _saveRepCompletion(
+          repNumber: result.reps,
+          score: repScore,
+        );
+        _previousReps = result.reps;
+      }
+
       setState(() {
         _reps = result.reps;
         _score = result.score;
@@ -830,6 +842,35 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
         Vibration.vibrate(duration: 70);
       }
     } catch (_) {}
+  }
+
+  Future<void> _saveRepCompletion({
+    required int repNumber,
+    required int score,
+  }) async {
+    final user = SupabaseService.currentUser;
+    if (user == null) {
+      // User not authenticated, skip saving
+      return;
+    }
+
+    // Get exercise name from enum
+    final exerciseName = widget.exercise.name;
+
+    try {
+      await SupabaseService.saveRepCompletion(
+        userId: user.id,
+        exerciseName: exerciseName,
+        repNumber: repNumber,
+        score: score,
+        date: DateTime.now(),
+      );
+      // Optionally show a brief success indicator (or keep silent)
+      // print('Rep $repNumber saved successfully');
+    } catch (e) {
+      // Silently handle errors - don't interrupt the workout
+      print('Error saving rep: $e');
+    }
   }
 
   @override
@@ -1104,6 +1145,8 @@ class FormEngine {
   int _currentRepIndex = 0;
   int _reps = 0;
   int _score = 100;
+  int _currentRepScore = 100; // Score accumulated during current rep
+  RepState _previousState = RepState.top; // Track state transitions to detect rep start
 
   // Alert severity for this frame (0-3)
   int _alertSeverity = 0;
@@ -1116,7 +1159,10 @@ class FormEngine {
 
   FormResult update(Pose pose, int nowMs) {
     _alertSeverity = 0;
-    _score = 100;
+    
+    // Start each frame with a fresh score calculation from current rep score
+    // This allows deductions to accumulate properly
+    _score = _currentRepScore;
 
     final lm = pose.landmarks;
 
@@ -1196,6 +1242,14 @@ class FormEngine {
       scale: scale,
     );
 
+    // Detect when a new rep starts (transition from top to descent)
+    if (_previousState == RepState.top && _repSM.state == RepState.descent) {
+      // New rep started - reset score to 100
+      _currentRepScore = 100;
+      _score = 100;
+    }
+    _previousState = _repSM.state;
+
     // Compute angles
     final kneeAngle = _angleDeg(hp, kn, an);
     final hipAngle = _angleDeg(sh, hp, kn);
@@ -1243,10 +1297,30 @@ class FormEngine {
       _ema.set('heelTopY', heelY);
     }
 
+    // Update current rep score during active rep
+    // Only accumulate score when actively doing a rep (not in idle top state)
+    final isInActiveRep = _repSM.state != RepState.top;
+    if (isInActiveRep) {
+      // Update the accumulated rep score with current deductions
+      // This accumulates all deductions throughout the rep
+      _currentRepScore = _score.clamp(0, 100);
+      // Update display score to show current rep progress
+      _score = _currentRepScore;
+    } else {
+      // Not in active rep - show base score
+      _score = 100;
+    }
+
     // Rep finalized?
+    int completedRepScore = _currentRepScore;
     if (repEvent == RepEvent.repCompleted) {
       _reps += 1;
       _currentRepIndex += 1;
+      // Store the score for this completed rep
+      completedRepScore = _currentRepScore;
+      // Reset for next rep
+      _currentRepScore = 100;
+      _score = 100;
     }
 
     // Friendly default tip
@@ -1256,7 +1330,8 @@ class FormEngine {
         reps: _reps,
         score: _score.clamp(0, 100),
         tip: _tip,
-        alertSeverity: _alertSeverity);
+        alertSeverity: _alertSeverity,
+        completedRepScore: repEvent == RepEvent.repCompleted ? completedRepScore : null);
   }
 
   void _squatChecks({
@@ -1450,11 +1525,13 @@ class FormResult {
   final int score;
   final String tip;
   final int alertSeverity;
+  final int? completedRepScore; // Score of the rep that just completed
   FormResult(
       {required this.reps,
       required this.score,
       required this.tip,
-      required this.alertSeverity});
+      required this.alertSeverity,
+      this.completedRepScore});
 }
 
 /// -----------------------
