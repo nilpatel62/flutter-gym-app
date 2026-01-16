@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:vibration/vibration.dart';
 import '../services/supabase_service.dart';
 import '../services/permission_service.dart';
+import 'profile_screen.dart';
 
 enum ExerciseType { squat, pushup, deadlift }
 
@@ -25,7 +26,17 @@ class ExerciseSelectScreen extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.person_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+            tooltip: 'Profile',
+          ),
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
               await SupabaseService.signOut();
               // Navigation will be handled by auth state listener
@@ -83,7 +94,7 @@ class ExerciseSelectScreen extends StatelessWidget {
                 _ExerciseCard(
                   title: 'Push-up',
                   subtitle: 'Side View',
-                  icon: Icons.sports_gymnastics,
+                  icon: Icons.sports,
                   color: Colors.orange,
                   exercise: ExerciseType.pushup,
                 ),
@@ -136,11 +147,11 @@ class ExerciseSelectScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       _TipItem(
-                          icon: Icons.height,
+                          icon: Icons.phone_android,
                           text: 'Place phone at waist height'),
                       const SizedBox(height: 8),
                       _TipItem(
-                          icon: Icons.straighten,
+                          icon: Icons.zoom_out_map,
                           text: 'Position 2–3 meters away'),
                       const SizedBox(height: 8),
                       _TipItem(
@@ -148,7 +159,7 @@ class ExerciseSelectScreen extends StatelessWidget {
                           text: 'Ensure full body is visible'),
                       const SizedBox(height: 8),
                       _TipItem(
-                          icon: Icons.camera_alt_outlined,
+                          icon: Icons.camera_alt,
                           text: 'Side view only'),
                     ],
                   ),
@@ -310,7 +321,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
   IconData get exerciseIcon => switch (widget.exercise) {
         ExerciseType.squat => Icons.fitness_center,
-        ExerciseType.pushup => Icons.sports_gymnastics,
+        ExerciseType.pushup => Icons.sports,
         ExerciseType.deadlift => Icons.trending_up,
       };
 
@@ -904,7 +915,7 @@ class _LiveCoachScreenState extends State<LiveCoachScreen> {
                       const CircularProgressIndicator()
                     else
                       Icon(
-                        Icons.camera_alt_outlined,
+                        Icons.camera_alt,
                         size: 64,
                         color: Theme.of(context).colorScheme.error,
                       ),

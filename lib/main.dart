@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.blue,
           brightness: Brightness.light,
         ),
+        iconTheme: const IconThemeData(),
       ),
       home: const AuthWrapper(),
       debugShowCheckedModeBanner: false,
