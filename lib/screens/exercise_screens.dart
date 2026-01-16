@@ -11,6 +11,7 @@ import 'package:vibration/vibration.dart';
 import '../services/supabase_service.dart';
 import '../services/permission_service.dart';
 import 'profile_screen.dart';
+import 'analytics_screen.dart';
 
 enum ExerciseType { squat, pushup, deadlift }
 
@@ -25,6 +26,16 @@ class ExerciseSelectScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
+              );
+            },
+            tooltip: 'Analytics',
+          ),
           IconButton(
             icon: const Icon(Icons.person_outline),
             onPressed: () {
